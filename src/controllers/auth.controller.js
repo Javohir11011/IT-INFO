@@ -1,6 +1,11 @@
 import jwt from "jsonwebtoken";
 import { User } from "../modules/index.js";
-import { statusCodes, errorMessages, ApiError } from "../utils/index.js";
+import {
+  statusCodes,
+  errorMessages,
+  ApiError,
+  logger,
+} from "../utils/index.js";
 
 export const registerController = async (req, res, next) => {
   try {
@@ -19,7 +24,7 @@ export const registerController = async (req, res, next) => {
       .status(statusCodes.CONFLICT)
       .send(errorMessages.EMAIL_ALREADY_EXISTS);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     next(new ApiError(error.statusCode, error.message));
   }
 };
@@ -67,3 +72,47 @@ export const loginController = async (req, res, next) => {
     next(new ApiError(error.statusCode, error.message));
   }
 };
+
+export const refreshTokenController = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, decode) => {
+      if (err) throw new Error(statusCodes.FORBIDDEN, message.FORBIDDEN);
+
+      logger.info({ decode });
+      const accessToken = jwt.sign(
+        {
+          sub: decode.sub,
+          role: decode.role,
+        },
+        process.env.JWT_ACCESS_SECRET,
+        {
+          expiresIn: process.env.JWT_ACCESS_EXPORES_IN,
+        }
+      );
+
+      return res.send({ accessToken, refreshToken:token });
+    });
+  } catch (error) {
+    next(new ApiError(error.statusCode, error.message));
+  }
+};
+
+
+export const adminController = async (req, res,next)=>{
+  try {
+    const {email} = req.body
+    const currentAdmin = await User.findOne({email})
+    logger.info(currentAdmin)
+    if(!currentAdmin){
+      console.log({ currentAdmin });
+      const admin = new User(req.body);
+
+      await admin.save();
+      return res.status(statusCodes.CREATED).send("created");
+    }
+    return res.send("User already register...")
+  } catch (error) {
+    next(new ApiError(error.statusCode, error.message))
+  }
+}

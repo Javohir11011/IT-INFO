@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginController, registerController } from "../controllers/index.js";
+import { adminController, loginController, refreshTokenController, registerController } from "../controllers/index.js";
 import { authGuard, roleGuard } from "../middleware/index.js";
 
 export const authRouter = new Router();
@@ -14,3 +14,5 @@ authRouter.get(
     res.send("ok");
   }
 );
+authRouter.post("/refresh", refreshTokenController);
+authRouter.post("/admin", authGuard, roleGuard("superAdmin"), adminController);

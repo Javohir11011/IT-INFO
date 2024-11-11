@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import rateLimit from "express-rate-limit";
 import {
   articleRouter,
   authRouter,
@@ -14,9 +15,16 @@ dotenv.config();
 
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit : 6,
+});
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+app.use(limiter);
 
 app.use("/auth", authRouter);
 app.use("/blog", blogRouter);
