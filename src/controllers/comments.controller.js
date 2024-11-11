@@ -1,17 +1,15 @@
-import { Article } from "../modules/index.js";
+import {Comment } from "../modules/index.js";
 import { ApiError, errorMessages, statusCodes } from "../utils/index.js";
 
-export const createArticleController = async (req, res, next) => {
+export const createCommentController = async (req, res, next) => {
     try {
-      const {title} = req.body;
-      const currentArticle = await Article.findOne({title});
+      const {content} = req.body;
+      const currentComment = await Comment.findOne({content});
   
-      if (!currentArticle) {
-        console.log({ currentArticle });
-        const categoriya = new Article(req.body);
-        console.log({ categoriya });
+      if (!currentComment) {
+        const comment = new Comment(req.body);
   
-        await categoriya.save();
+        await comment.save();
         return res.status(statusCodes.CREATED).send("created");
       }
       return res
@@ -24,9 +22,9 @@ export const createArticleController = async (req, res, next) => {
     }
   };
 
-  export const getAllArticleController = async (req, res, next) => {
+  export const getAllCommentController = async (req, res, next) => {
     try {
-        const currentCategory = await Article.find();
+        const currentCategory = await Comment.find();
         if (!currentCategory) {
             return res
                 .status(statusCodes.NOT_FOUND)
@@ -39,27 +37,27 @@ export const createArticleController = async (req, res, next) => {
     }
 };
 
-export const updateArticleController = async (req, res, next) => {
+export const updateCommentController = async (req, res, next) => {
   try {
-      const title = req.params.title
-      const currentCategory = await Article.findOneAndUpdate({title}, req.body);
-      if (!currentCategory) {
+      const name = req.params.name
+      const currentCourse = await Comment.findOneAndUpdate({name}, req.body);
+      if (!currentCourse) {
           return res
               .status(statusCodes.NOT_FOUND)
               .send(errorMessages.USER_NOT_FOUND);
       }
-      console.log(currentCategory);
-      res.send(currentCategory);
+      console.log(currentCourse);
+      res.send(currentCourse);
   } catch (error) {
       next(new ApiError(error.statusCodes, error.message));
   }
 };
 
-export const deleteArticleController = async (req, res, next) => {
+export const deleteCommentController = async (req, res, next) => {
   try {
       const payload = req.user
       const title = req.params.title
-      const currentCategory = await Article.findOneAndDelete({title});
+      const currentCategory = await Comment.findOneAndDelete({title});
       if (!currentCategory) {
           return res
               .status(statusCodes.NOT_FOUND)

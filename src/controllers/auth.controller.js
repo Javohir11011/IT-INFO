@@ -6,6 +6,7 @@ import {
   ApiError,
   logger,
 } from "../utils/index.js";
+import {genSalt, hash } from "bcrypt";
 
 export const registerController = async (req, res, next) => {
   try {
@@ -112,6 +113,49 @@ export const adminController = async (req, res,next)=>{
       return res.status(statusCodes.CREATED).send("created");
     }
     return res.send("User already register...")
+  } catch (error) {
+    next(new ApiError(error.statusCode, error.message))
+  }
+}
+
+export const updateAdminController = async (req, res, next) => {
+  try {
+    const email = req.params.email;
+    const { newpassword, password, email2 } = req.body;
+
+    const currentAdmin = await User.findOne({ email });
+    if (!currentAdmin) {
+      return res.status(statusCodes.NOT_FOUND).send(errorMessages.EMAIL_ALREADY_EXISTS);
+    }
+    const checkPassword = await currentAdmin.compare(password);
+    if (!checkPassword) {
+      return res.status(400).send("False");
+    }
+
+    if(newpassword) {
+      const salt = await genSalt(10);
+      currentAdmin.password = await hash(newpassword, salt);
+    }
+
+    if (email2) {
+      currentAdmin.email = email2;
+    }
+
+    await User.updateOne({email},currentAdmin)
+
+    return res.status(statusCodes.OK).send("Admin updated...");
+  } catch (error) {
+    next(new ApiError(error.statusCode, error.message));
+  }
+};
+export const deleteAdminController = async(req, res, next)=>{
+  try {
+    const email = req.params.email
+    const currentAdmin = await User.findOneAndDelete({email})
+    if(!currentAdmin){
+      return res.status(statusCodes.NOT_FOUND).send(errorMessages.NOT_FOUND)
+    }
+    return res.status(statusCodes.OK).send("Delete Admin...")
   } catch (error) {
     next(new ApiError(error.statusCode, error.message))
   }

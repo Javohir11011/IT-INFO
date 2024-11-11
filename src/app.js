@@ -7,6 +7,8 @@ import {
   authRouter,
   blogRouter,
   categoriyRouter,
+  commeentRouter,
+  courseRouter,
   userRouter,
 } from "./routes/index.js";
 // import { logger } from "./utils/index.js";
@@ -31,6 +33,8 @@ app.use("/blog", blogRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/category", categoriyRouter);
 app.use("/article", articleRouter);
+app.use("/course", courseRouter);
+app.use("/comments", commeentRouter);
 
 app.use((err, req, res, next) => {
   if (err) {

@@ -1,14 +1,14 @@
-import { Article } from "../modules/index.js";
+import {Course } from "../modules/index.js";
 import { ApiError, errorMessages, statusCodes } from "../utils/index.js";
 
-export const createArticleController = async (req, res, next) => {
+export const createCourseController = async (req, res, next) => {
     try {
       const {title} = req.body;
-      const currentArticle = await Article.findOne({title});
+      const currentArticle = await Course.findOne({title});
   
       if (!currentArticle) {
         console.log({ currentArticle });
-        const categoriya = new Article(req.body);
+        const categoriya = new Course(req.body);
         console.log({ categoriya });
   
         await categoriya.save();
@@ -24,9 +24,9 @@ export const createArticleController = async (req, res, next) => {
     }
   };
 
-  export const getAllArticleController = async (req, res, next) => {
+  export const getAllCourseController = async (req, res, next) => {
     try {
-        const currentCategory = await Article.find();
+        const currentCategory = await Course.find();
         if (!currentCategory) {
             return res
                 .status(statusCodes.NOT_FOUND)
@@ -39,27 +39,27 @@ export const createArticleController = async (req, res, next) => {
     }
 };
 
-export const updateArticleController = async (req, res, next) => {
+export const updateCourseController = async (req, res, next) => {
   try {
-      const title = req.params.title
-      const currentCategory = await Article.findOneAndUpdate({title}, req.body);
-      if (!currentCategory) {
+      const name = req.params.name
+      const currentCourse = await Course.findOneAndUpdate({name}, req.body);
+      if (!currentCourse) {
           return res
               .status(statusCodes.NOT_FOUND)
               .send(errorMessages.USER_NOT_FOUND);
       }
-      console.log(currentCategory);
-      res.send(currentCategory);
+      console.log(currentCourse);
+      res.send(currentCourse);
   } catch (error) {
       next(new ApiError(error.statusCodes, error.message));
   }
 };
 
-export const deleteArticleController = async (req, res, next) => {
+export const deleteCourseController = async (req, res, next) => {
   try {
       const payload = req.user
       const title = req.params.title
-      const currentCategory = await Article.findOneAndDelete({title});
+      const currentCategory = await Course.findOneAndDelete({title});
       if (!currentCategory) {
           return res
               .status(statusCodes.NOT_FOUND)

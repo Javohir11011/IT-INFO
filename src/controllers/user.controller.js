@@ -15,8 +15,6 @@ export const userController = async (req, res, next) => {
         next(new ApiError(error.statusCodes, error.message));
     }
 };
-
-
 export const getAllController = async (req, res, next) => {
     try {
         // const payload = req.user;
@@ -32,7 +30,6 @@ export const getAllController = async (req, res, next) => {
         next(new ApiError(error.statusCodes, error.message));
     }
 };
-
 export const updateUserController = async (req, res, next) => {
     try {
         const email = req.params.email
@@ -49,7 +46,6 @@ export const updateUserController = async (req, res, next) => {
         next(new ApiError(error.statusCodes, error.message));
     }
 };
-
 export const deleteUserController = async (req, res, next) => {
     try {
         const payload = req.user
