@@ -2,10 +2,12 @@ import { Router } from "express";
 import {
   adminController,
   deleteAdminController,
+  forgetPassword,
   loginController,
   refreshTokenController,
   registerController,
   updateAdminController,
+  verifyController,
 } from "../controllers/index.js";
 import { authGuard, roleGuard } from "../middleware/index.js";
 
@@ -22,6 +24,7 @@ authRouter.get(
   }
 );
 authRouter.post("/refresh", refreshTokenController);
+authRouter.post("/verify", verifyController);
 authRouter.post("/admin", authGuard, roleGuard("superAdmin"), adminController);
 authRouter.put(
   "/admin/update/:email",
@@ -35,3 +38,5 @@ authRouter.delete(
   roleGuard("superAdmin"),
   deleteAdminController
 );
+
+authRouter.put("/forget-password", forgetPassword)
