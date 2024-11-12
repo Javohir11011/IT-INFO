@@ -1,10 +1,11 @@
 import {Course } from "../modules/index.js";
+import { createCourseService, getAllCourseService } from "../service/course.service.js";
 import { ApiError, errorMessages, statusCodes } from "../utils/index.js";
 
 export const createCourseController = async (req, res, next) => {
     try {
       const {title} = req.body;
-      const currentArticle = await Course.findOne({title});
+      const currentArticle = await createCourseService(title, req.body)
   
       if (!currentArticle) {
         console.log({ currentArticle });
@@ -26,7 +27,7 @@ export const createCourseController = async (req, res, next) => {
 
   export const getAllCourseController = async (req, res, next) => {
     try {
-        const currentCategory = await Course.find();
+        const currentCategory = await getAllCourseService()
         if (!currentCategory) {
             return res
                 .status(statusCodes.NOT_FOUND)
