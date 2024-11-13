@@ -18,9 +18,8 @@ export const createCourseService = async (title, body) => {
     if (!currentArticle) {
       const article = new Course(body);
       await article.save();
-
     }
-    return article;
+    return currentArticle;
   } catch (error) {
     return error.message;
   }
@@ -29,7 +28,8 @@ export const createCourseService = async (title, body) => {
 
 export const updateCourseService = async (title, body) => {
     try {
-        const currentCategory = await Course.findOneAndUpdate({ title }, body);
+        const currentCategory = await Course.findOneAndUpdate({ name:title }, body, {new:true});
+        console.log(currentCategory);
         if (!currentCategory) {
           throw new Error("Error")
         }
@@ -41,7 +41,7 @@ export const updateCourseService = async (title, body) => {
 
 export const deleteCourseService = async (title, body) => {
     try {
-        const currentCategory = await Course.findOneAndDelete({ title });
+        const currentCategory = await Course.findOneAndDelete({name: title });
         if (!currentCategory) {
           throw new Error("Error")
         }

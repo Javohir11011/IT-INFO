@@ -1,24 +1,19 @@
 import {Course } from "../modules/index.js";
-import { createCourseService, getAllCourseService } from "../service/course.service.js";
+import { createCourseService, deleteCourseService, getAllCourseService, updateCourseService } from "../service/course.service.js";
 import { ApiError, errorMessages, statusCodes } from "../utils/index.js";
 
 export const createCourseController = async (req, res, next) => {
     try {
-      const {title} = req.body;
-      const currentArticle = await createCourseService(title, req.body)
-  
+      const {name} = req.body;
+      const currentArticle = await createCourseService(name, req.body)
       if (!currentArticle) {
-        console.log({ currentArticle });
-        const categoriya = new Course(req.body);
-        console.log({ categoriya });
-  
-        await categoriya.save();
         return res.status(statusCodes.CREATED).send("created");
       }
+      
       return res
-        .status(statusCodes.CONFLICT)
-        .send(errorMessages.EMAIL_ALREADY_EXISTS
-        );
+      .status(statusCodes.CONFLICT)
+      .send(errorMessages.EMAIL_ALREADY_EXISTS
+      );
     } catch (error) {
       console.log(error)
       next(new ApiError(error.statusCodes, error.message));
@@ -43,13 +38,13 @@ export const createCourseController = async (req, res, next) => {
 export const updateCourseController = async (req, res, next) => {
   try {
       const name = req.params.name
-      const currentCourse = await Course.findOneAndUpdate({name}, req.body);
+      const currentCourse = await updateCourseService(name, req.body)
       if (!currentCourse) {
           return res
               .status(statusCodes.NOT_FOUND)
               .send(errorMessages.USER_NOT_FOUND);
       }
-      console.log(currentCourse);
+      // console.log(currentCourse);
       res.send(currentCourse);
   } catch (error) {
       next(new ApiError(error.statusCodes, error.message));
@@ -59,8 +54,8 @@ export const updateCourseController = async (req, res, next) => {
 export const deleteCourseController = async (req, res, next) => {
   try {
       const payload = req.user
-      const title = req.params.title
-      const currentCategory = await Course.findOneAndDelete({title});
+      const name = req.params.name
+      const currentCategory = await deleteCourseService(name)
       if (!currentCategory) {
           return res
               .status(statusCodes.NOT_FOUND)
